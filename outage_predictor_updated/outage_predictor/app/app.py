@@ -425,8 +425,7 @@ if not is_historical:
         ⚠️ <b>Pattern-based forecast.</b> Voltix cannot predict a specific future outage event on an
         exact day — no dataset can support that level of certainty. For {selected_date.strftime('%B %Y')},
         what you'll see instead is a <b>seasonal risk estimate</b> — how this DisCo has historically
-        behaved in this calendar month, drawn from its trained risk model (built on
-        {DATA_MAX_MONTH.strftime('%B %Y')}-and-earlier operational trend data) — used as a proxy for
+        behaved in this calendar month, drawn from its trained risk model used as a proxy for
         what to expect. The <b>live Band and minimum-supply-hours data below is current</b> and separate
         from this seasonal estimate. Treat the gauge above as an informed pattern, not a forecast of a
         specific day.
@@ -685,7 +684,7 @@ with st.expander("ℹ️ How Voltix works, and its current limitations"):
 **Two data layers, kept separate on purpose:**
 
 1. **Risk model (historical, trend-based):** trained on real NERC operational and
-   financial reports, Jan 2019 – {DATA_MAX_MONTH.strftime('%B %Y')}, at DisCo level. NERC's
+   financial reports at DisCo level. NERC's
    public data does not include a raw outage log, so Voltix uses a proxy label — a
    DisCo-month is flagged high-risk when energy received drops sharply or
    technical/commercial losses spike, relative to that DisCo's own trailing trend.
@@ -722,4 +721,4 @@ model is trained on historical NERC data under the original DisCo names, which i
 what was in effect during the data collection period.
     """)
 
-st.caption("Voltix — Capstone MVP. Built on real NERC data. Not a substitute for official DisCo outage alerts.")
+st.caption("Voltix — Capstone MVP. Built on real NERC data. Not yet a substitute for official DisCo outage alerts.")
