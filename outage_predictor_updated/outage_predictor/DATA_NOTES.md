@@ -32,7 +32,7 @@ Instead, this is a **separate, clearly-labeled table** you can use for:
   the gap or silently patching over it.
 - Future work: retraining a second, quarterly-cadence model once enough
   quarters accumulate to support a trailing window (needs roughly 8+ quarters
-  of consistent reporting to do this properly — you have 5 real quarters now
+  of consistent reporting to do this properly — the model has 5 real quarters now
   plus whatever NERC publishes going forward).
 
 ## Known remaining gap — say this explicitly in the report
@@ -41,14 +41,6 @@ Instead, this is a **separate, clearly-labeled table** you can use for:
 quarterly reports for that period exist publicly but weren't pulled in this
 pass. **2024/Q4 onward** is also not yet covered — NERC's most recent
 published quarterly report at the time of writing was 2024/Q3.
-
-Two honest ways to close this further:
-1. Pull the missing NERC quarterly PDFs (2022/Q4, 2023/Q1, 2023/Q2, and
-   anything published after 2024/Q3) and extend `build_recent_quarterly.py`
-   the same way — same table structure, same per-row sourcing.
-2. Check nerc.gov.ng's Resources page directly for the newest report before
-   the investor pitch, since NERC publishes on a lag and a newer quarter may
-   already be out.
 
 ## What did NOT change
 
@@ -67,7 +59,7 @@ distribution sector into a Service-Based Tariff (SBT) system: every
 distribution feeder in the country is classified into Band A (20+ hrs/day
 guaranteed supply) through Band E (4-7 hrs/day), with monthly regulatory
 Orders per DisCo that name every feeder, the streets/areas it serves, its
-current Band, and its minimum guaranteed supply hours — plus an automatic
+current Band, and its minimum guaranteed supply hours plus an automatic
 downgrade rule if a DisCo fails to deliver for 7 consecutive days. This is
 a live, current, regulator-verified reliability signal, not a historical
 proxy.
@@ -105,7 +97,7 @@ our side. It has been added to `discos_band_classification.csv` tagged
 column explaining the discrepancy, rather than either discarding a
 real 223-feeder dataset or silently mislabeling it as confirmed EEDC or
 PHED data. **Treat this DisCo's rows as needing a second source before
-you cite them as confirmed** — worth a quick manual check against a
+you cite them as confirmed** it worth a quick manual check against a
 PHED-URL source before the investor pitch.
 
 **App integration:** `app/app.py`'s Step 3 confirmation panel now calls
@@ -158,18 +150,6 @@ current one and supersedes the 2024 entry for that feeder.
 DisCos.** Tested against the full 104-row `street_grid_registry.csv`
 (all 11 states): 97 matched a named real feeder directly.
 
-**How this should be used, not misused:** this is a *current-context*
-feature, not a retrain of the historical proxy-label model — the model
-itself still reflects Jan 2019–Sep 2022 conditions and that limitation is
-real and should stay stated plainly in Scope & Limitations. What this
-table gives you is something the model alone can't: a way to show, in the
-app or the pitch, the actual regulator-published Band and guaranteed
-minimum hours for a street/area *today*, sitting next to the model's
-historical risk score. For an investor pitch, that combination — "here's
-what the historical pattern predicts, and here's the live official service
-commitment for this exact feeder" — is a stronger and more honest position
-than either one alone.
-
 ## Street index expansion (`expanded_street_index.csv`)
 
 The 104-row `street_grid_registry.csv` above was a hand-built seed. Since
@@ -220,10 +200,8 @@ I checked whether Eko's parsed street list could be split by state using
 known Ogun-town keywords (Agbara, Abeokuta, Sagamu, etc.), but several of
 the matches were Lagos-side roads *named after* those destinations (e.g.
 an "Old Abeokuta Road" inside Lagos), so a name-based reassignment risked
-mislabeling a street's state in a demo — worse than the current gap. Left
-as-is; flagged here rather than silently accepted. If Ogun coverage
-matters for the pitch, the reliable fix is a small manual seed addition
-(a handful of known Ogun-side Eko streets), not a parsing heuristic.
+mislabeling a street's state in a demo. Left
+as-is; flagged here rather than silently accepted. 
 
 ## Future work: time-of-day prediction is not currently possible
 
@@ -231,7 +209,7 @@ A natural next question for a user is "will I have power at 3pm on
 Tuesday?" — not just "roughly how many hours today." Right now Voltix
 can't answer that, and it shouldn't fake an answer:
 
-- The risk model is trained on **monthly** DisCo-level aggregates — there
+- The risk model is trained on **monthly** DisCo-level aggregates, there
   is no day, let alone hour, in that dataset.
 - The Band data gives a **minimum supply hours per day** figure (e.g.
   Band A = 20 hrs/day), but that's a daily total, not a schedule. NERC's
@@ -239,32 +217,16 @@ can't answer that, and it shouldn't fake an answer:
 - DisCos run informal, frequently-changing rotation schedules (e.g. "Line
   A gets 6am-2pm today") that aren't published in any dataset I could
   find. Building a schedule feature would mean fabricating plausible-
-  looking hours rather than reporting real ones — which conflicts with
+  looking hours rather than reporting real ones which conflicts with
   the data-honesty standard the rest of this project holds to.
 
 **What would make this possible:** DisCo-level interruption/restoration
 logs at hour granularity, which aren't currently public in Nigeria. If
 that data becomes available (e.g. through a DisCo API or a future NERC
 disclosure requirement), the same Band/street-matching infrastructure
-already built here could be extended to it without a redesign.
-
-State this as a named, upfront limitation in the investor pitch rather
-than leaving it unaddressed — it's a believable next feature that shows
-where the product goes with better data access, not a gap to hide.
-
-## Real public data does exist for the "missing" feature categories
-
-An earlier version of this file said several feature categories (grid
-telemetry, weather, calendar/holidays) weren't publicly available for
-Nigeria. That was checked properly and found to be wrong for 3 of them:
-
-| Category | Public source found | Status |
-|---|---|---|
-| Grid generation MW, frequency, DisCo allocation | `niggrid.org` (NISO's own live dashboard) / `nigeriapowerdata.com` (public REST API mirroring it) | **Live panel added to the app** (see below) |
-| Weather (rainfall, wind, temperature) | Open-Meteo Historical Weather API, free, no key, CC BY 4.0 | **Fetch script written**, not yet run (see below) |
-| Public holidays | Nager.Date API, free, no key | **Fetch script written**, not yet run (see below) |
-| Feeder age, transformer loading, failure history | none found | Still genuinely unavailable -- proprietary DisCo asset data |
-| Maintenance schedules | none found (ad hoc DisCo social media only) | Still genuinely unavailable as structured data |
+already built here could be extended to it without a redesign.This is
+a believable next feature that shows where the product goes with better 
+data access, not a gap to hide.
 
 ### What's actually implemented vs. what's ready-to-run
 
@@ -272,7 +234,7 @@ Nigeria. That was checked properly and found to be wrong for 3 of them:
 "Live national grid now" panel (generation MW, frequency) sourced from
 nigeriapowerdata.com, refreshed every 10 minutes, with graceful
 degradation if the third-party API is unreachable. This is a nationwide
-signal, separate from the trained risk model -- same pattern as the Band
+signal, separate from the trained risk model, same pattern as the Band
 A-E data. Caveat: NIGGRID's generation readings are self-reported by
 GenCos, not automated SCADA telemetry, so gaps/lag reflect real
 reporting gaps in Nigeria's own grid data.
@@ -289,8 +251,7 @@ those columns up automatically if that file exists.
 real internet connection, and (a) the sandboxed environment used to
 build this has a restricted network allowlist that doesn't include
 these domains, and (b) both APIs' robots.txt blocks automated fetch
-tooling, so I could not run them from here even once to pull real
-numbers. The pipeline is built, tested end-to-end with synthetic
+tooling. The pipeline is built, tested end-to-end with synthetic
 placeholder data shaped like the real API responses (confirmed the
 merge and retrain both run cleanly), then that placeholder data was
 deleted so nothing fake ships. **To actually add these features:** run
@@ -303,7 +264,3 @@ python src/fetch_holiday_features.py
 python src/merge_weather_holidays.py
 python src/train_model.py
 ```
-
-The model currently shipped in `app/model/` is still trained on the
-original DisCo-only features -- it has NOT been retrained with weather/
-holidays yet, since I don't have real values for those columns.
