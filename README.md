@@ -1,6 +1,6 @@
 # Voltix — Electricity Outage Risk Predictor for Nigeria
 
-A machine learning app that predicts electricity outage risk across all 11
+A model that predicts electricity outage risk across all 11
 Nigerian DisCo (electricity distribution company) territories, built on real
 NERC operational and financial data. Built as a 3MTT capstone project.
 
