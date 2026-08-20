@@ -3,7 +3,7 @@
 VOLTIX -- Electricity Outage Risk Predictor (Nigeria)
 =============================================================================
 Capstone MVP. This file is organized into clearly commented sections so a
-reader (grader, teammate, or future you) can follow the logic top to bottom:
+reader can follow the logic top to bottom:
 
   1. Page config & branding (CSS)
   2. Load model + data artifacts
@@ -150,7 +150,7 @@ def load_expanded_street_index():
 def load_band_classification():
     """Real, current (July 2025) NERC feeder-level Band A-E data.
 
-    Only covers the DisCos we've extracted so far from NERC's own
+    Only covers the DisCos extracted so far from NERC's own
     regulatory Orders (see DATA_NOTES.md). Everything else still falls
     back to the legacy `service_band` estimate in street_grid_registry.csv.
     """
@@ -424,9 +424,9 @@ if not is_historical:
     <div class="voltix-disclaimer">
         ⚠️ <b>Pattern-based forecast.</b> Voltix cannot predict a specific future outage event on an
         exact day — no dataset can support that level of certainty. For {selected_date.strftime('%B %Y')},
-        what you'll see instead is a <b>seasonal risk estimate</b> — how this DisCo has historically
+        what you'll see instead is a <b>seasonal risk estimate</b> (how this DisCo has historically
         behaved in this calendar month, drawn from its trained risk model used as a proxy for
-        what to expect. The <b>live Band and minimum-supply-hours data below is current</b> and separate
+        what to expect). The <b>live Band and minimum-supply-hours data below is current</b> and separate
         from this seasonal estimate. Treat the gauge above as an informed pattern, not a forecast of a
         specific day.
     </div>
@@ -514,7 +514,7 @@ def get_features_for(disco, target_month, historical):
     month (genuine forecast from real trend data -- same logic as before).
 
     If `historical` is False (a future date): there's no real trend data
-    to lag from, so we instead build a representative feature vector from
+    to lag from, so a representative feature vector is built from
     that DisCo's AVERAGE historical pattern for the same calendar month
     across all years -- i.e. "what does a typical <month-name> look like
     for this DisCo, historically". This is explicitly a seasonal pattern
@@ -689,10 +689,10 @@ with st.expander("ℹ️ How Voltix works, and its current limitations"):
    DisCo-month is flagged high-risk when energy received drops sharply or
    technical/commercial losses spike, relative to that DisCo's own trailing trend.
    This is a defensible research approach, not a confirmed outage record. A trend
-   model like this is inherently trained on a historical window — that's normal and
+   model like this is inherently trained on a historical window, that's normal and
    expected, the same way any model has a training cutoff.
 2. **Live regulatory data (current):** real, NERC/DisCo-published Service-Based
-   Tariff Band (A–E) and minimum-guaranteed-supply-hours data for all 11 DisCos —
+   Tariff Band (A–E) and minimum-guaranteed-supply-hours data for all 11 DisCos,
    the same information used to determine what a customer is actually billed and
    promised. This is shown directly in Step 3 for the exact feeder/street matched,
    with its source cited in the "Data source & verification" panel, and it's kept
@@ -708,11 +708,11 @@ rather than a clean address database, there's some noise (occasional duplicated
 fragments or non-street tokens) — a known, documented limitation rather than a
 production-grade national address index.
 
-**Future dates:** Voltix cannot predict a specific real outage on a future date —
+**Future dates:** Voltix cannot predict a specific real outage on a future date,
 no dataset can support that level of certainty. For dates beyond
 {DATA_MAX_MONTH.strftime('%B %Y')}, the risk gauge shows a **seasonal pattern
 estimate** based on how that DisCo has historically behaved in that calendar month,
-clearly labeled as such rather than presented as a forecast — while the live Band
+clearly labeled as such rather than presented as a forecast while the live Band
 data in Step 3 stays current regardless of the date selected.
 
 **Note on DisCo names:** Lagos's DisCo structure changed in late 2025 — Eko DisCo
